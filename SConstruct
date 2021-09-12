@@ -133,7 +133,6 @@ env_base.__class__.use_windows_spawn_fix = methods.use_windows_spawn_fix
 
 env_base.__class__.add_shared_library = methods.add_shared_library
 env_base.__class__.add_library = methods.add_library
-env_base.__class__.add_program = methods.add_program
 env_base.__class__.CommandNoCache = methods.CommandNoCache
 env_base.__class__.Run = methods.Run
 env_base.__class__.disable_warnings = methods.disable_warnings
@@ -200,6 +199,14 @@ opts.Add(BoolVariable("modules_enabled_by_default", "If no, disable all modules 
 opts.Add(BoolVariable("no_editor_splash", "Don't use the custom splash screen for the editor", True))
 opts.Add("system_certs_path", "Use this path as SSL certificates default for editor (for package maintainers)", "")
 opts.Add(BoolVariable("use_precise_math_checks", "Math checks use very precise epsilon (debug option)", False))
+opts.Add(
+    EnumVariable(
+        "library_type",
+        "Build library type",
+        "executable",
+        ("executable", "static_library", "shared_library"),
+    )
+)
 
 # Thirdparty libraries
 opts.Add(BoolVariable("builtin_certs", "Use the built-in SSL certificates bundles", True))
@@ -244,6 +251,15 @@ opts.Update(env_base)
 # Platform selection: validate input, and add options.
 
 selected_platform = ""
+
+if env_base["library_type"] == "static_library":
+    env_base.__class__.add_program = methods.add_library
+    env_base.Append(CPPDEFINES=["LIBRARY_ENABLED"])
+elif env_base["library_type"] == "shared_library":
+    env_base.__class__.add_program = methods.add_shared_library
+    env_base.Append(CPPDEFINES=["LIBRARY_ENABLED"])
+else:
+    env_base.__class__.add_program = methods.add_program
 
 if env_base["platform"] != "":
     selected_platform = env_base["platform"]
