@@ -161,7 +161,7 @@ public:
 	virtual AABB get_aabb() const;
 
 	Vector<Face3> get_faces() const;
-	Ref<TriangleMesh> generate_triangle_mesh() const;
+	Ref<TriangleMesh> generate_triangle_mesh(const Array p_bone_transforms = Array()) const;
 	void generate_debug_mesh_lines(Vector<Vector3> &r_lines);
 	void generate_debug_mesh_indices(Vector<Vector3> &r_points);
 
